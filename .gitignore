@@ -1,0 +1,10 @@
+.cache
+.DS_Store
+.forever
+.node-gyp
+.npm
+.idea
+node_modules
+npm-debug.log
+dist
+package-lock.json

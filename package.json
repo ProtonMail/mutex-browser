@@ -1,0 +1,22 @@
+{
+    "name": "mutex-browser",
+    "version": "1.0.0",
+    "description": "Acquire a mutex in the browser through IndexedDB or cookies",
+    "license": "MIT",
+    "author": "Mattias Svanström <mmso@mmso.se>",
+    "main": "src/index.mjs",
+    "scripts": {
+        "lint": "eslint src/*.js test/*.js",
+        "test": "npm run lint && npx karma start karma.conf.js"
+    },
+    "devDependencies": {
+        "eslint": "^5.1.0",
+        "jasmine": "^3.1.0",
+        "jasmine-core": "^3.1.0",
+        "karma": "^2.0.4",
+        "karma-chrome-launcher": "^2.2.0",
+        "karma-jasmine": "^1.1.2",
+        "karma-rollup-preprocessor": "^6.0.0",
+        "puppeteer": "^1.6.0"
+    }
+}
