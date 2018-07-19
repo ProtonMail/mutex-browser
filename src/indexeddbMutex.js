@@ -46,8 +46,6 @@ const tryLock = (db, name, objectStoreName, expiry) => {
  * @returns {Promise<{lock: lock, unlock: (function(String): Promise<any>)}>}
  */
 export default ({ expiry = 10000, spinTimeout = 100, objectStoreName = 'mutexes', dbName = 'mutex' } = {}) => {
-    const dbPromise = initDb({ dbName, objectStoreName })
-
     return {
         /**
          * Acquire the lock.
@@ -63,12 +61,13 @@ export default ({ expiry = 10000, spinTimeout = 100, objectStoreName = 'mutexes'
          * @returns {Promise} that resolves when the lock has been acquired.
          */
         lock: async (name) => {
-            const db = await dbPromise
+            const db = await initDb({ dbName, objectStoreName })
             let attempts = 0
             while (!(await tryLock(db, name, objectStoreName, expiry))) {
                 await delay(spinTimeout)
                 attempts++
             }
+            db.close()
             return attempts
         },
 
@@ -78,14 +77,20 @@ export default ({ expiry = 10000, spinTimeout = 100, objectStoreName = 'mutexes'
          * @returns {Promise} that resolves when the lock has been released.
          */
         unlock: async (name) => {
-            const db = await dbPromise
+            const db = await initDb({ dbName, objectStoreName })
             const tx = db.transaction(objectStoreName, 'readwrite')
             const store = tx.objectStore(objectStoreName)
             const unlockRequest = store.put(0, name)
 
             return new Promise((resolve, reject) => {
-                unlockRequest.onsuccess = () => resolve()
-                unlockRequest.onerror = () => reject(unlockRequest.error)
+                unlockRequest.onsuccess = () => {
+                    resolve()
+                    db.close()
+                }
+                unlockRequest.onerror = () => {
+                    reject(unlockRequest.error)
+                    db.close()
+                }
             })
         }
     }
