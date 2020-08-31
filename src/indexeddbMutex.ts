@@ -37,12 +37,15 @@ const tryLock = (db: IDBDatabase, name: string, objectStoreName: string, expiry:
     });
 };
 
-interface Arguments {
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+export interface IDBArguments {
     expiry?: number;
     spinTimeout?: number;
     objectStoreName?: string;
     dbName?: string;
 }
+
+export const DEFAULT_DB_NAME = 'mutex';
 
 /**
  * This library provides a mutex backed by the transactional guarantees of the IndexedDB API.
@@ -56,8 +59,8 @@ export default ({
     expiry = 10000,
     spinTimeout = 100,
     objectStoreName = 'mutexes',
-    dbName = 'mutex',
-}: Partial<Arguments> = {}) => {
+    dbName = DEFAULT_DB_NAME,
+}: IDBArguments = {}) => {
     /**
      * Acquire the lock.
      *

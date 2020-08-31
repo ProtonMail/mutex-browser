@@ -45,7 +45,7 @@ const options = {
     // for the IndexedDB lock
     objectStoreName: 'mutex', // The name of the IndexedDB store.
     dbName: 'mutex', // The name of the IndexedDB database.
-}
+};
 ```
 
 ## Example

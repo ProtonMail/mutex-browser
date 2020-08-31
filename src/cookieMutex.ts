@@ -1,5 +1,6 @@
 import createFastMutex, { Arguments } from './fastMutex';
 import createCookieStorage from './cookieStorage';
 
-export default (options?: Omit<Arguments, 'storage'>) =>
-    createFastMutex({ ...options, storage: createCookieStorage() });
+export type CookieArguments = Omit<Arguments, 'storage'>;
+
+export default (options?: CookieArguments) => createFastMutex({ ...options, storage: createCookieStorage() });
