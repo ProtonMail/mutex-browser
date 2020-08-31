@@ -62,7 +62,7 @@ describe('mutex', () => {
             const lockName = 'lock2';
             const mutex1 = create();
             const mutex2 = create();
-            let order = [];
+            const order = [];
 
             const p1 = mutex1
                 .lock(lockName)
@@ -88,7 +88,7 @@ describe('mutex', () => {
                 const mutex1 = create();
                 const mutex2 = create();
 
-                let order = [];
+                const order = [];
 
                 const p1 = Promise.resolve().then(async () => {
                     await mutex1.lock(lockName);
