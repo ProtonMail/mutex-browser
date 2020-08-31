@@ -1,4 +1,4 @@
-import serve from 'rollup-plugin-serve'
+import serve from 'rollup-plugin-serve';
 
 export default [
     {
@@ -8,8 +8,8 @@ export default [
             file: 'dist/buttons.js',
             format: 'iife',
             interop: false,
-            strict: false
-        }
+            strict: false,
+        },
     },
     {
         input: 'iframe.js',
@@ -18,8 +18,8 @@ export default [
             file: 'dist/iframe.js',
             format: 'iife',
             interop: false,
-            strict: false
-        }
+            strict: false,
+        },
     },
     {
         input: 'mutexLoop.js',
@@ -28,13 +28,13 @@ export default [
             file: 'dist/mutexLoop.js',
             format: 'iife',
             interop: false,
-            strict: false
+            strict: false,
         },
         plugins: [
             serve({
                 port: 11001,
-                contentBase: ''
-            })
-        ]
-    }
-]
+                contentBase: '',
+            }),
+        ],
+    },
+];

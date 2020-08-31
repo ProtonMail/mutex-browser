@@ -1,27 +1,27 @@
-import { createIndexedDbMutex, createCookieMutex } from '../src/index'
-import { delay } from '../src/utils'
+import { createIDBMutex, createCookieMutex } from '../lib/index';
+import { delay } from '../lib/utils';
 
-const hash = location.hash || ''
+const hash = location.hash || '';
 
-const mutex = hash.indexOf('cookie') !== -1 ? createCookieMutex() : createIndexedDbMutex()
-const mutexName = 'body'
+const mutex = hash.indexOf('cookie') !== -1 ? createCookieMutex() : createIDBMutex();
+const mutexName = 'body';
 
 const run = async () => {
-    document.body.style.background = 'red'
-    document.body.innerHTML = 'waiting for lock'
+    document.body.style.background = 'red';
+    document.body.innerHTML = 'waiting for lock';
 
-    await mutex.lock(mutexName)
+    await mutex.lock(mutexName);
 
-    document.body.style.background = 'green'
-    document.body.innerHTML = 'has lock'
+    document.body.style.background = 'green';
+    document.body.innerHTML = 'has lock';
 
-    await delay(1000)
-    await mutex.unlock(mutexName)
+    await delay(1000);
+    await mutex.unlock(mutexName);
 
-    document.body.style.background = 'red'
-    document.body.innerHTML = ''
+    document.body.style.background = 'red';
+    document.body.innerHTML = '';
 
-    setTimeout(run, 2)
-}
+    setTimeout(run, 2);
+};
 
-setTimeout(run, 5)
+setTimeout(run, 5);

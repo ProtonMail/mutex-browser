@@ -1,4 +1,4 @@
-process.env.CHROME_BIN = require('puppeteer').executablePath()
+process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = (config) => {
     config.set({
@@ -9,25 +9,23 @@ module.exports = (config) => {
                 random: true,
                 stopOnFailure: true,
                 failFast: true,
-                timeoutInterval: 2000
-            }
+                timeoutInterval: 2000,
+            },
         },
-        files: [
-            'test/**/*.spec.js'
-        ],
+        files: ['test/**/*.spec.js'],
         preprocessors: {
-            'test/**/*.spec.js': ['rollup']
+            'test/**/*.spec.js': ['rollup'],
         },
         rollupPreprocessor: {
             output: {
                 format: 'iife',
                 name: 'MutexTest',
-                sourcemap: 'inline'
-            }
+                sourcemap: 'inline',
+            },
         },
         logLevel: config.LOG_INFO,
         autoWatch: false,
         browsers: ['ChromeHeadless'],
-        singleRun: true
-    })
-}
+        singleRun: true,
+    });
+};
