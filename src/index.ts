@@ -10,7 +10,7 @@ type Mutex = ReturnType<typeof createIDBMutex>;
 export const create = (options?: IDBArguments & CookieArguments): Mutex => {
     const hasIDBPromise = new Promise((resolve) => {
         try {
-            const db = indexedDB.open(options?.dbName || DEFAULT_DB_NAME);
+            const db = indexedDB.open(options && options.dbName || DEFAULT_DB_NAME);
             db.onerror = () => resolve(true);
             db.onsuccess = () => resolve(false);
         } catch (err) {
