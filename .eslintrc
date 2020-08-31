@@ -1,0 +1,17 @@
+{
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+    "env": {
+        "es6": true,
+        "browser": true,
+        "jasmine": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2017,
+        "sourceType": "module"
+    },
+    "plugins": ["@typescript-eslint/eslint-plugin"],
+    "rules": {
+        "@typescript-eslint/ban-ts-ignore": "off"
+    }
+}
