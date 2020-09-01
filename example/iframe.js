@@ -2,7 +2,7 @@ const getRow = (n, type) => {
     return `
     <tr>
     ${Array.apply(null, Array(n))
-        .map(() => '<td><iframe src="./mutexLoop.html#' + type + '"></iframe></td>')
+        .map(() => '<td><iframe src="./mutexLoop.html#' + type + '" width="60" height="60"></iframe></td>')
         .join('\n')}
     </tr>
     `;
