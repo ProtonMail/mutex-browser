@@ -94,7 +94,7 @@ export default ({
         const db = await initDb(dbName, objectStoreName);
         const tx = db.transaction(objectStoreName, 'readwrite');
         const store = tx.objectStore(objectStoreName);
-        const unlockRequest = store.put(0, name);
+        const unlockRequest = store.delete(name);
 
         return new Promise((resolve, reject) => {
             unlockRequest.onsuccess = () => {
