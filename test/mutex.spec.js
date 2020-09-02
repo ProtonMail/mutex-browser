@@ -128,7 +128,9 @@ describe('mutex', () => {
         afterEach(() => {
             clearCookies();
         });
-        runTests(createCookieMutex);
+        runTests(() => {
+            return createCookieMutex({ spinTimeout: 100 });
+        });
     });
 
     describe('indexed db mutex', () => {
@@ -138,6 +140,8 @@ describe('mutex', () => {
         afterEach(async () => {
             await clearDb('mutex', 'mutexes');
         });
-        runTests(createIDBMutex);
+        runTests(() => {
+            return createIDBMutex({ spinTimeout: 100 });
+        });
     });
 });
