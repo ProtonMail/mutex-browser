@@ -31,7 +31,7 @@ export interface Arguments {
  */
 export default ({
     expiry = 10000,
-    spinTimeout = 20,
+    spinTimeout = 1000,
     id = getId(),
     keyX = defaultKeyX,
     keyY = defaultKeyY,
