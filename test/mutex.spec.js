@@ -129,7 +129,7 @@ describe('mutex', () => {
             clearCookies();
         });
         runTests(() => {
-            return createCookieMutex({ spinTimeout: 100 });
+            return createCookieMutex({ spinTimeout: 20 });
         });
     });
 

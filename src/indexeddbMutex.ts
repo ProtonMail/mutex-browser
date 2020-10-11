@@ -1,14 +1,26 @@
 import { delay } from './utils';
 
-const initDb = (dbName: string, objectStoreName: string) =>
+export const initDb = (dbName: string, objectStoreName: string) =>
     new Promise<IDBDatabase>((resolve, reject) => {
-        const openRequest = indexedDB.open(dbName, 1);
+        const openRequest = indexedDB.open(dbName, 2);
         openRequest.onupgradeneeded = () => {
             const db = openRequest.result;
-            db.createObjectStore(objectStoreName);
+            try {
+                db.createObjectStore(objectStoreName);
+            } catch (e) {
+                // If it would already exist
+                if (e.name === 'ConstraintError') {
+                    return undefined;
+                }
+                throw e;
+            }
         };
-        openRequest.onsuccess = () => resolve(openRequest.result);
-        openRequest.onerror = () => reject(openRequest.error);
+        openRequest.onsuccess = () => {
+            resolve(openRequest.result);
+        }
+        openRequest.onerror = () => {
+            reject(openRequest.error);
+        }
     });
 
 const tryLock = (db: IDBDatabase, name: string, objectStoreName: string, expiry: number) => {
@@ -45,8 +57,6 @@ export interface IDBArguments {
     dbName?: string;
 }
 
-export const DEFAULT_DB_NAME = 'mutex';
-
 /**
  * This library provides a mutex backed by the transactional guarantees of the IndexedDB API.
  * Based on https://github.com/robertknight/idb-mutex
@@ -59,7 +69,7 @@ export default ({
     expiry = 10000,
     spinTimeout = 1000,
     objectStoreName = 'mutexes',
-    dbName = DEFAULT_DB_NAME,
+    dbName = 'mutex',
 }: IDBArguments = {}) => {
     /**
      * Acquire the lock.
@@ -74,7 +84,7 @@ export default ({
      * @param name of key to lock
      * @returns promise that resolves when the lock has been acquired.
      */
-    const lock = async (name: string) => {
+    const lock = async (name: string): Promise<number> => {
         const db = await initDb(dbName, objectStoreName);
         let attempts = 0;
         while (!(await tryLock(db, name, objectStoreName, expiry))) {
@@ -90,7 +100,7 @@ export default ({
      * @param {String} name
      * @returns {Promise} that resolves when the lock has been released.
      */
-    const unlock = async (name: string) => {
+    const unlock = async (name: string): Promise<void> => {
         const db = await initDb(dbName, objectStoreName);
         const tx = db.transaction(objectStoreName, 'readwrite');
         const store = tx.objectStore(objectStoreName);
@@ -111,5 +121,6 @@ export default ({
     return {
         lock,
         unlock,
+        init: () => initDb(dbName, objectStoreName)
     };
 };

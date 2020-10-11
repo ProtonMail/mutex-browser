@@ -2,25 +2,28 @@ export { default as createFastMutex } from './fastMutex';
 export { default as createIDBMutex } from './indexeddbMutex';
 export { default as createCookieMutex } from './cookieMutex';
 
-import createIDBMutex, { IDBArguments, DEFAULT_DB_NAME } from './indexeddbMutex';
+import createIDBMutex, { IDBArguments } from './indexeddbMutex';
 import createCookieMutex, { CookieArguments } from './cookieMutex';
 
-type Mutex = ReturnType<typeof createIDBMutex>;
+interface Mutex {
+    lock: (name: string) => Promise<number>;
+    unlock: (name: string) => Promise<void>;
+}
 
 export const create = (options?: IDBArguments & CookieArguments): Mutex => {
-    const hasIDBPromise = new Promise((resolve) => {
+    const createMutex = async () => {
         try {
-            const db = indexedDB.open(options && options.dbName || DEFAULT_DB_NAME);
-            db.onsuccess = () => resolve(true);
-            db.onerror = () => resolve(false);
-        } catch (err) {
-            resolve(false);
+            const mutex = createIDBMutex(options);
+            await mutex.init();
+            return mutex;
+        } catch (e) {
+            return createCookieMutex(options);
         }
-    });
+    }
 
     let mutex: Mutex | undefined = undefined;
-    const promise = hasIDBPromise.then((result) => {
-        mutex = result ? createIDBMutex(options) : createCookieMutex(options);
+    const promise = createMutex().then((result) => {
+        mutex = result
         return mutex;
     });
 
@@ -29,7 +32,7 @@ export const create = (options?: IDBArguments & CookieArguments): Mutex => {
             if (mutex) {
                 return mutex.lock(name);
             }
-            return promise.then((mutex: Mutex) => mutex.lock(name));
+            return promise.then((mutex) => mutex.lock(name));
         },
         unlock: (name: string) => {
             if (mutex) {

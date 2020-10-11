@@ -61,7 +61,7 @@ export default ({
      * @param name of key to lock
      * @returns that resolves when the lock has been acquired.
      */
-    const lock = async (name: string) => {
+    const lock = async (name: string): Promise<number> => {
         const X = keyX(name);
         const Y = keyY(name);
         let attempts = -1;
@@ -108,7 +108,7 @@ export default ({
      * @param name of lock
      * @returns promise that resolves when the lock has been released.
      */
-    const unlock = async (name: string) => {
+    const unlock = async (name: string): Promise<void> => {
         const Y = keyY(name);
         storage.remove(Y);
     };
