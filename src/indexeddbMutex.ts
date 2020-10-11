@@ -121,6 +121,9 @@ export default ({
     return {
         lock,
         unlock,
-        init: () => initDb(dbName, objectStoreName)
+        init: async () => {
+            const db = await initDb(dbName, objectStoreName);
+            db.close();
+        }
     };
 };

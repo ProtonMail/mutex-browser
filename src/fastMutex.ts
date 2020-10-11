@@ -25,7 +25,7 @@ export interface Arguments {
  * Provides a fast mutual exclusion algorithm, synchronized using cookies.
  * Based on http://lamport.azurewebsites.net/pubs/fast-mutex.pdf
  * @param [expiry=10000] Max time in ms before the lock will expire. Note: The function can't take longer than this.
- * @param [spinTimeout=20] The time in ms before with how long the retry should spin. Note: This will be randomized to prevent starving.
+ * @param [spinTimeout=1000] The time in ms before with how long the retry should spin. Note: This will be randomized to prevent starving.
  * @param id The id of mutex contender. Must be unique.
  * @param [keyX] The name to give to the key X
  * @param [keyY] The name to give to the key Y
