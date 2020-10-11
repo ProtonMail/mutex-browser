@@ -11,8 +11,8 @@ export const create = (options?: IDBArguments & CookieArguments): Mutex => {
     const hasIDBPromise = new Promise((resolve) => {
         try {
             const db = indexedDB.open(options && options.dbName || DEFAULT_DB_NAME);
-            db.onerror = () => resolve(true);
-            db.onsuccess = () => resolve(false);
+            db.onsuccess = () => resolve(true);
+            db.onerror = () => resolve(false);
         } catch (err) {
             resolve(false);
         }
