@@ -1,3 +1,5 @@
+const MAX_ATTEMPTS = 10000;
+
 import { delay, raf, random } from './utils';
 
 const defaultKeyX = (name: string) => `${name}_lock_X`;
@@ -64,10 +66,7 @@ export default ({
         const Y = keyY(name);
         let attempts = -1;
 
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-            ++attempts;
-
+        while (++attempts < MAX_ATTEMPTS) {
             storage.set(X, id);
 
             await raf();
@@ -100,6 +99,8 @@ export default ({
 
             return attempts;
         }
+
+        throw new Error('Failed acquiring lock');
     };
 
     /**
