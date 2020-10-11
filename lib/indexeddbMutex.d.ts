@@ -1,13 +1,14 @@
+export declare const initDb: (dbName: string, objectStoreName: string) => Promise<IDBDatabase>;
 export interface IDBArguments {
     expiry?: number;
     spinTimeout?: number;
     objectStoreName?: string;
     dbName?: string;
 }
-export declare const DEFAULT_DB_NAME = "mutex";
 declare const _default: ({ expiry, spinTimeout, objectStoreName, dbName, }?: IDBArguments) => {
     lock: (name: string) => Promise<number>;
-    unlock: (name: string) => Promise<unknown>;
+    unlock: (name: string) => Promise<void>;
+    init: () => Promise<void>;
 };
 /**
  * This library provides a mutex backed by the transactional guarantees of the IndexedDB API.

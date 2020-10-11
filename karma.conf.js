@@ -9,7 +9,7 @@ module.exports = (config) => {
                 random: true,
                 stopOnFailure: true,
                 failFast: true,
-                timeoutInterval: 2000,
+                timeoutInterval: 10000,
             },
         },
         files: ['test/**/*.spec.js'],

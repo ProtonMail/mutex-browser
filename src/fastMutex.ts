@@ -1,3 +1,5 @@
+const MAX_ATTEMPTS = 10000;
+
 import { delay, raf, random } from './utils';
 
 const defaultKeyX = (name: string) => `${name}_lock_X`;
@@ -23,7 +25,7 @@ export interface Arguments {
  * Provides a fast mutual exclusion algorithm, synchronized using cookies.
  * Based on http://lamport.azurewebsites.net/pubs/fast-mutex.pdf
  * @param [expiry=10000] Max time in ms before the lock will expire. Note: The function can't take longer than this.
- * @param [spinTimeout=20] The time in ms before with how long the retry should spin. Note: This will be randomized to prevent starving.
+ * @param [spinTimeout=1000] The time in ms before with how long the retry should spin. Note: This will be randomized to prevent starving.
  * @param id The id of mutex contender. Must be unique.
  * @param [keyX] The name to give to the key X
  * @param [keyY] The name to give to the key Y
@@ -59,15 +61,12 @@ export default ({
      * @param name of key to lock
      * @returns that resolves when the lock has been acquired.
      */
-    const lock = async (name: string) => {
+    const lock = async (name: string): Promise<number> => {
         const X = keyX(name);
         const Y = keyY(name);
         let attempts = -1;
 
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-            ++attempts;
-
+        while (++attempts < MAX_ATTEMPTS) {
             storage.set(X, id);
 
             await raf();
@@ -100,6 +99,8 @@ export default ({
 
             return attempts;
         }
+
+        throw new Error('Failed acquiring lock');
     };
 
     /**
@@ -107,7 +108,7 @@ export default ({
      * @param name of lock
      * @returns promise that resolves when the lock has been released.
      */
-    const unlock = async (name: string) => {
+    const unlock = async (name: string): Promise<void> => {
         const Y = keyY(name);
         storage.remove(Y);
     };

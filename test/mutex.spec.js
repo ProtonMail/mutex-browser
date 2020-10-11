@@ -1,4 +1,4 @@
-import { createCookieMutex, createIDBMutex } from '../lib/index';
+import { create, createCookieMutex, createIDBMutex } from '../lib/index';
 
 const clearCookies = () =>
     document.cookie.split(';').forEach(function (c) {
@@ -7,17 +7,18 @@ const clearCookies = () =>
 
 const clearDb = (dbName, tableName) => {
     return new Promise((resolve) => {
-        const request = indexedDB.open(dbName);
-        request.onsuccess = (event) => {
-            const db = event.target.result;
-            const tx = db.transaction(tableName, 'readwrite');
-            tx.objectStore(tableName).clear();
-            tx.oncomplete = () => resolve();
-        };
+        const request = indexedDB.deleteDatabase(dbName);
+        request.onsuccess = () => resolve();
+        request.onerror = () => resolve();
     });
-};
+}
 
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
+
+const clear = async () => {
+    clearCookies();
+    await clearDb('mutex', 'mutexes');
+}
 
 describe('mutex', () => {
     const runTests = (create) => {
@@ -70,7 +71,7 @@ describe('mutex', () => {
                 .then(() => order.push(1))
                 .then(() => mutex1.unlock(lockName));
 
-            await delay(10);
+            await delay(30);
 
             const p2 = mutex2
                 .lock(lockName)
@@ -121,27 +122,76 @@ describe('mutex', () => {
         }
     };
     describe('cookie mutex', () => {
-        beforeAll(async () => {
-            clearCookies();
-            await delay(10);
-        });
-        afterEach(() => {
-            clearCookies();
-        });
+        beforeEach(clear);
+        afterEach(clear);
         runTests(() => {
-            return createCookieMutex({ spinTimeout: 100 });
+            return createCookieMutex({ spinTimeout: 20 });
         });
     });
 
     describe('indexed db mutex', () => {
-        beforeAll(async () => {
-            await delay(10);
-        });
-        afterEach(async () => {
-            await clearDb('mutex', 'mutexes');
-        });
+        beforeEach(clear);
+        afterEach(clear);
         runTests(() => {
             return createIDBMutex({ spinTimeout: 100 });
         });
+    });
+});
+
+describe('init', () => {
+    afterEach(clear);
+    beforeEach(clear);
+
+    it('should get idb lock when available', async () => {
+        const lockName = 'test';
+        const mutex1 = create();
+        await mutex1.lock(lockName);
+        const value = await new Promise((resolve, reject) => {
+            const openRequest = indexedDB.open('mutex', 2);
+            openRequest.onsuccess = () => {
+                const db = openRequest.result;
+
+                const tx = db.transaction('mutexes', 'readonly');
+                const store = tx.objectStore('mutexes');
+
+                const request = store.get(lockName);
+                request.onsuccess = () => {
+                    resolve(request.result);
+                    db.close();
+                }
+                request.onerror = () => {
+                    reject();
+                    db.close();
+                }
+            };
+            openRequest.onerror = () => {
+                reject();
+            };
+        });
+        expect(typeof value).toBe('number');
+        expect(document.cookie).toBe('');
+
+        await mutex1.unlock(lockName);
+    });
+
+    it('should get cookie lock when available', async () => {
+        const lockName = 'test';
+
+        await new Promise((resolve, reject) => {
+            const openRequest = indexedDB.open('mutex', 10);
+            openRequest.onsuccess = () => {
+                const db = openRequest.result;
+                resolve(1);
+                db.close();
+            }
+            openRequest.onerror = (e) => {
+                reject();
+            }
+        });
+
+        const mutex1 = create({ spinTimeout: 20, expiry: 100 });
+        await mutex1.lock(lockName);
+        await mutex1.unlock(lockName);
+        expect(document.cookie).toContain('test_lock_X');
     });
 });
