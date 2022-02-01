@@ -1,6 +1,6 @@
 {
     "name": "@protontech/mutex-browser",
-    "version": "1.0.0",
+    "version": "1.0.4",
     "description": "Acquire a mutex in the browser through IndexedDB or cookies",
     "main": "lib/index.js",
     "module": "lib/index.js",
