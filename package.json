@@ -6,8 +6,6 @@
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "preversion": "./preversion.sh",
-        "postversion": "./postversion.sh",
         "build": "tsc",
         "pretty": "prettier --write .",
         "test": "npm run build && npx karma start karma.conf.js",
