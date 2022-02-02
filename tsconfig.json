@@ -3,7 +3,7 @@
         "target": "esnext",
         "module": "esnext",
         "declaration": true,
-        "outDir": "./lib",
+        "outDir": "./dist",
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "strict": true
